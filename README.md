@@ -1,1 +1,1 @@
-# etch-a-sketch
+This mini project is a sketchpad/etch-a-sketch.
