@@ -4,6 +4,15 @@ body {
     align-items: center;
 }
 
+.options {
+    display: flex;
+    align-items: center;
+}
+
+input {
+    margin: 16px;
+}
+
 button {
     margin: 16px;
     padding: 8px;

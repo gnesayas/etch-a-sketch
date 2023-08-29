@@ -1,3 +1,41 @@
+let color = '#000000';
+let rainbowMode = false;
+let blackWhiteMode = false;
+let progressivelyDarken = false;
+
+colorInput = document.querySelector('.color');
+colorInput.addEventListener('input', (e) => {
+    color = e.target.value;
+    rainbowMode = false;
+    blackWhiteMode = false;
+});
+
+const rainbowBtn = document.querySelector('.rainbow');
+rainbowBtn.addEventListener('click', () => {
+    rainbowMode = !rainbowMode;
+    if (rainbowMode) {
+        blackWhiteMode = false;
+        progressivelyDarken = false;
+    }
+});
+
+const blackWhiteBtn = document.querySelector('.blackWhite');
+blackWhiteBtn.addEventListener('click', () => {
+    blackWhiteMode = !blackWhiteMode;
+    if (blackWhiteMode) {
+        rainbowMode = false;
+        progressivelyDarken = false;
+    }
+});
+
+const darkenBtn = document.querySelector('.darken');
+darkenBtn.addEventListener('click', () => {
+    progressivelyDarken = !progressivelyDarken;
+    if (progressivelyDarken) {
+        setVisitValues(visitValues.length);
+    }
+});
+
 const resetButton = document.querySelector('.reset');
 
 resetButton.addEventListener('click', () => {
@@ -25,7 +63,7 @@ function setVisitValues(dimensions) {
 }
 
 const container = document.querySelector('.container');
-const CONTAINER_SIZE = 960;
+const CONTAINER_SIZE = 720;
 
 container.style.width = CONTAINER_SIZE + 'px';
 container.style.height = CONTAINER_SIZE + 'px';
@@ -70,14 +108,24 @@ function changeBackgroundColor(e) {
     if (primaryMouseButtonDown) {
         const row = parseInt(this.getAttribute('data-row'));
         const col = parseInt(this.getAttribute('data-col'));
-        const timesVisited = Math.min(10, visitValues[row][col] + 1);
-        const r = Math.floor(Math.random() * 255);
-        const g = Math.floor(Math.random() * 255);
-        const b = Math.floor(Math.random() * 255);
-        const adjustedR = r * (10 - timesVisited) / 9;
-        const adjustedG = g * (10 - timesVisited) / 9;
-        const adjustedB = b * (10 - timesVisited) / 9;
-        this.style.background = `rgb(${adjustedR}, ${adjustedG}, ${adjustedB})`;
-        visitValues[row][col] += 1;
+        if (rainbowMode || blackWhiteMode) {
+            const r = Math.floor(Math.random() * 255);
+            const g = blackWhiteMode ? r : Math.floor(Math.random() * 255);
+            const b = blackWhiteMode ? r : Math.floor(Math.random() * 255);
+            if (rainbowMode && !progressivelyDarken) {
+                this.style.background = `rgb(${r}, ${g}, ${b})`;
+            } else if (blackWhiteMode && !progressivelyDarken) {
+                this.style.background = `rgb(${r}, ${g}, ${b})`;
+            } else {
+                const timesVisited = Math.min(10, visitValues[row][col] + 1);
+                const adjustedR = r * (10 - timesVisited) / 9;
+                const adjustedG = g * (10 - timesVisited) / 9;
+                const adjustedB = b * (10 - timesVisited) / 9;
+                this.style.background = `rgb(${adjustedR}, ${adjustedG}, ${adjustedB})`;
+                visitValues[row][col] += 1;
+            }
+        } else {
+            this.style.background = color;
+        }
     }
 }
