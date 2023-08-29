@@ -120,6 +120,7 @@ function createGrid(dimensions) {
             square.style.outline = '1px solid black';
             square.setAttribute('data-row', i);
             square.setAttribute('data-col', j);
+            square.addEventListener('mousedown', changeBackgroundColor);
             square.addEventListener('mouseover', changeBackgroundColor);
             row.appendChild(square);
         }
@@ -144,7 +145,7 @@ document.addEventListener('mouseup', setPrimaryButtonState);
 
 function changeBackgroundColor(e) {
     e.preventDefault();
-    if (primaryMouseButtonDown) {
+    if (primaryMouseButtonDown || e.type === 'mousedown') {
         const row = parseInt(this.getAttribute('data-row'));
         const col = parseInt(this.getAttribute('data-col'));
         if (rainbowMode || grayscaleMode) {
@@ -156,16 +157,33 @@ function changeBackgroundColor(e) {
             } else if (grayscaleMode && !progressivelyDarken) {
                 this.style.background = `rgb(${r}, ${g}, ${b})`;
             } else {
-                const timesVisited = Math.min(10, visitValues[row][col] + 1);
-                const adjustedR = r * (10 - timesVisited) / 9;
-                const adjustedG = g * (10 - timesVisited) / 9;
-                const adjustedB = b * (10 - timesVisited) / 9;
-                this.style.background = `rgb(${adjustedR}, ${adjustedG}, ${adjustedB})`;
-                visitValues[row][col] += 1;
+                darken(this, r, g, b, row, col);
             }
         } else {
-            this.style.background = color;
-            console.log(color);
+            if (!progressivelyDarken) {
+                this.style.background = color;
+            } else {
+                let rgbObj = hexToRGB(color);
+                darken(this, rgbObj.r, rgbObj.g, rgbObj.b, row, col);
+            }
         }
     }
+}
+
+function darken(square, r, g, b, row, col) {
+    const timesVisited = Math.min(10, visitValues[row][col] + 1);
+    const adjustedR = r * (10 - timesVisited) / 9;
+    const adjustedG = g * (10 - timesVisited) / 9;
+    const adjustedB = b * (10 - timesVisited) / 9;
+    square.style.background = `rgb(${adjustedR}, ${adjustedG}, ${adjustedB})`;
+    visitValues[row][col] += 1;
+}
+
+function hexToRGB(color) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
 }
