@@ -17,3 +17,31 @@ button {
     margin: 16px;
     padding: 8px;
 }
+
+.rainbow, .grayscale, .darken {
+    transition: all .1s ease;
+}
+
+.expand {
+    outline: 4px solid yellow;
+    transform: scale(1.1);
+}
+
+.rainbowSelect, .grayscaleSelect, .darkenSelect {
+    transform: scale(1.1);
+}
+
+.rainbowSelect {
+    background-image: linear-gradient(
+        to right,
+        red, orange, yellow, green, blue, indigo, violet);
+}
+
+.grayscaleSelect {
+    background-color: gray;
+}
+
+.darkenSelect {
+    background-color: black;
+    color: white;
+}

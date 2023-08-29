@@ -1,38 +1,74 @@
 let color = '#000000';
 let rainbowMode = false;
-let blackWhiteMode = false;
+let grayscaleMode = false;
 let progressivelyDarken = false;
+const DEFAULT_SIZE = 16;
 
 colorInput = document.querySelector('.color');
 colorInput.addEventListener('input', (e) => {
     color = e.target.value;
     rainbowMode = false;
-    blackWhiteMode = false;
+    grayscaleMode = false;
+    progressivelyDarken = false;
+    rainbowBtn.classList.remove('rainbowSelect');
+    grayscaleBtn.classList.remove('grayscaleSelect');
+    darkenBtn.classList.remove('darkenSelect');
 });
 
 const rainbowBtn = document.querySelector('.rainbow');
+rainbowBtn.addEventListener('mouseover', () => {
+    rainbowBtn.classList.add('expand');
+});
+rainbowBtn.addEventListener('mouseleave', () => {
+    rainbowBtn.classList.remove('expand');
+});
 rainbowBtn.addEventListener('click', () => {
     rainbowMode = !rainbowMode;
     if (rainbowMode) {
-        blackWhiteMode = false;
+        grayscaleMode = false;
         progressivelyDarken = false;
+        grayscaleBtn.classList.remove('grayscaleSelect');
+        darkenBtn.classList.remove('darkenSelect');
+        rainbowBtn.classList.add('rainbowSelect');
+    } else {
+        rainbowBtn.classList.remove('rainbowSelect');
     }
 });
 
-const blackWhiteBtn = document.querySelector('.blackWhite');
-blackWhiteBtn.addEventListener('click', () => {
-    blackWhiteMode = !blackWhiteMode;
-    if (blackWhiteMode) {
+const grayscaleBtn = document.querySelector('.grayscale');
+grayscaleBtn.addEventListener('mouseover', () => {
+    grayscaleBtn.classList.add('expand');
+});
+grayscaleBtn.addEventListener('mouseleave', () => {
+    grayscaleBtn.classList.remove('expand');
+});
+grayscaleBtn.addEventListener('click', () => {
+    grayscaleMode = !grayscaleMode;
+    if (grayscaleMode) {
         rainbowMode = false;
         progressivelyDarken = false;
+        rainbowBtn.classList.remove('rainbowSelect');
+        darkenBtn.classList.remove('darkenSelect');
+        grayscaleBtn.classList.add('grayscaleSelect');
+    } else {
+        grayscaleBtn.classList.remove('grayscaleSelect');
     }
 });
 
 const darkenBtn = document.querySelector('.darken');
+darkenBtn.addEventListener('mouseover', () => {
+    darkenBtn.classList.add('expand');
+});
+darkenBtn.addEventListener('mouseleave', () => {
+    darkenBtn.classList.remove('expand');
+});
 darkenBtn.addEventListener('click', () => {
     progressivelyDarken = !progressivelyDarken;
     if (progressivelyDarken) {
         setVisitValues(visitValues.length);
+        darkenBtn.classList.add('darkenSelect');
+    } else {
+        darkenBtn.classList.remove('darkenSelect');
     }
 });
 
@@ -91,6 +127,9 @@ function createGrid(dimensions) {
     }
 }
 
+setVisitValues(DEFAULT_SIZE);
+createGrid(DEFAULT_SIZE);
+
 let primaryMouseButtonDown = false;
 
 function setPrimaryButtonState(e) {
@@ -108,13 +147,13 @@ function changeBackgroundColor(e) {
     if (primaryMouseButtonDown) {
         const row = parseInt(this.getAttribute('data-row'));
         const col = parseInt(this.getAttribute('data-col'));
-        if (rainbowMode || blackWhiteMode) {
+        if (rainbowMode || grayscaleMode) {
             const r = Math.floor(Math.random() * 255);
-            const g = blackWhiteMode ? r : Math.floor(Math.random() * 255);
-            const b = blackWhiteMode ? r : Math.floor(Math.random() * 255);
+            const g = grayscaleMode ? r : Math.floor(Math.random() * 255);
+            const b = grayscaleMode ? r : Math.floor(Math.random() * 255);
             if (rainbowMode && !progressivelyDarken) {
                 this.style.background = `rgb(${r}, ${g}, ${b})`;
-            } else if (blackWhiteMode && !progressivelyDarken) {
+            } else if (grayscaleMode && !progressivelyDarken) {
                 this.style.background = `rgb(${r}, ${g}, ${b})`;
             } else {
                 const timesVisited = Math.min(10, visitValues[row][col] + 1);
@@ -126,6 +165,7 @@ function changeBackgroundColor(e) {
             }
         } else {
             this.style.background = color;
+            console.log(color);
         }
     }
 }
