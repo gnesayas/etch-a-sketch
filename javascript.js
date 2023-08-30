@@ -2,7 +2,9 @@ let color = '#000000';
 let rainbowMode = false;
 let grayscaleMode = false;
 let progressivelyDarken = false;
+let eraseMode = false;
 const DEFAULT_SIZE = 16;
+const ERASE_COLOR = '#ffffff';
 
 colorInput = document.querySelector('.color');
 colorInput.addEventListener('input', (e) => {
@@ -10,9 +12,11 @@ colorInput.addEventListener('input', (e) => {
     rainbowMode = false;
     grayscaleMode = false;
     progressivelyDarken = false;
+    eraseMode = false;
     rainbowBtn.classList.remove('rainbowSelect');
     grayscaleBtn.classList.remove('grayscaleSelect');
     darkenBtn.classList.remove('darkenSelect');
+    eraseBtn.classList.remove('darkenSelect');
 });
 
 const rainbowBtn = document.querySelector('.rainbow');
@@ -27,8 +31,10 @@ rainbowBtn.addEventListener('click', () => {
     if (rainbowMode) {
         grayscaleMode = false;
         progressivelyDarken = false;
+        eraseMode = false;
         grayscaleBtn.classList.remove('grayscaleSelect');
         darkenBtn.classList.remove('darkenSelect');
+        eraseBtn.classList.remove('darkenSelect');
         rainbowBtn.classList.add('rainbowSelect');
     } else {
         rainbowBtn.classList.remove('rainbowSelect');
@@ -47,8 +53,10 @@ grayscaleBtn.addEventListener('click', () => {
     if (grayscaleMode) {
         rainbowMode = false;
         progressivelyDarken = false;
+        eraseMode = false;
         rainbowBtn.classList.remove('rainbowSelect');
         darkenBtn.classList.remove('darkenSelect');
+        eraseBtn.classList.remove('darkenSelect');
         grayscaleBtn.classList.add('grayscaleSelect');
     } else {
         grayscaleBtn.classList.remove('grayscaleSelect');
@@ -63,12 +71,38 @@ darkenBtn.addEventListener('mouseleave', () => {
     darkenBtn.classList.remove('expand');
 });
 darkenBtn.addEventListener('click', () => {
-    progressivelyDarken = !progressivelyDarken;
-    if (progressivelyDarken) {
-        setVisitValues(visitValues.length);
-        darkenBtn.classList.add('darkenSelect');
+    if (!eraseMode) {
+        progressivelyDarken = !progressivelyDarken;
+        if (progressivelyDarken) {
+            setVisitValues(visitValues.length);
+            darkenBtn.classList.add('darkenSelect');
+        } else {
+            darkenBtn.classList.remove('darkenSelect');
+        }
     } else {
+        alert('The eraser is on, so darkening is pointless. Select another mode first.');
+    }
+});
+
+const eraseBtn = document.querySelector('.erase');
+eraseBtn.addEventListener('mouseover', () => {
+    eraseBtn.classList.add('expand');
+});
+eraseBtn.addEventListener('mouseleave', () => {
+    eraseBtn.classList.remove('expand');
+});
+eraseBtn.addEventListener('click', () => {
+    eraseMode = !eraseMode;
+    if (eraseMode) {
+        rainbowMode = false;
+        grayscaleMode = false;
+        progressivelyDarken = false;
+        rainbowBtn.classList.remove('rainbowSelect');
+        grayscaleBtn.classList.remove('grayscaleSelect');
         darkenBtn.classList.remove('darkenSelect');
+        eraseBtn.classList.add('darkenSelect');
+    } else {
+        eraseBtn.classList.remove('darkenSelect');
     }
 });
 
@@ -114,10 +148,17 @@ function createGrid(dimensions) {
         row.style.display = 'flex';
         for (let j = 0; j < NUM_COLS; j++) {
             const square = document.createElement('div');
-            square.classList.add('square');
+            square.style.boxSizing = 'border-box';
             square.style.width = SQUARE_DIM + 'px';
             square.style.height = SQUARE_DIM + 'px';
-            square.style.outline = '1px solid black';
+            if (i === 0) {
+                square.style.borderTop = '1px solid black';
+            }
+            square.style.borderBottom = '1px solid black';
+            if (j === 0) {
+                square.style.borderLeft = '1px solid black';
+            }
+            square.style.borderRight = '1px solid black';
             square.setAttribute('data-row', i);
             square.setAttribute('data-col', j);
             square.addEventListener('mousedown', changeBackgroundColor);
@@ -145,27 +186,30 @@ document.addEventListener('mouseup', setPrimaryButtonState);
 
 function changeBackgroundColor(e) {
     e.preventDefault();
-    if (primaryMouseButtonDown || e.type === 'mousedown') {
-        const row = parseInt(this.getAttribute('data-row'));
-        const col = parseInt(this.getAttribute('data-col'));
-        if (rainbowMode || grayscaleMode) {
-            const r = Math.floor(Math.random() * 255);
-            const g = grayscaleMode ? r : Math.floor(Math.random() * 255);
-            const b = grayscaleMode ? r : Math.floor(Math.random() * 255);
-            if (rainbowMode && !progressivelyDarken) {
-                this.style.background = `rgb(${r}, ${g}, ${b})`;
-            } else if (grayscaleMode && !progressivelyDarken) {
-                this.style.background = `rgb(${r}, ${g}, ${b})`;
-            } else {
-                darken(this, r, g, b, row, col);
-            }
+    if (!primaryMouseButtonDown && e.type !== 'mousedown') return;
+    if (eraseMode) {
+        this.style.background = ERASE_COLOR;
+        return;
+    }
+    const row = parseInt(this.getAttribute('data-row'));
+    const col = parseInt(this.getAttribute('data-col'));
+    if (rainbowMode || grayscaleMode) {
+        const r = Math.floor(Math.random() * 255);
+        const g = grayscaleMode ? r : Math.floor(Math.random() * 255);
+        const b = grayscaleMode ? r : Math.floor(Math.random() * 255);
+        if (rainbowMode && !progressivelyDarken) {
+            this.style.background = `rgb(${r}, ${g}, ${b})`;
+        } else if (grayscaleMode && !progressivelyDarken) {
+            this.style.background = `rgb(${r}, ${g}, ${b})`;
         } else {
-            if (!progressivelyDarken) {
-                this.style.background = color;
-            } else {
-                let rgbObj = hexToRGB(color);
-                darken(this, rgbObj.r, rgbObj.g, rgbObj.b, row, col);
-            }
+            darken(this, r, g, b, row, col);
+        }
+    } else {
+        if (!progressivelyDarken) {
+            this.style.background = color;
+        } else {
+            let rgbObj = hexToRGB(color);
+            darken(this, rgbObj.r, rgbObj.g, rgbObj.b, row, col);
         }
     }
 }
