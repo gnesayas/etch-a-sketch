@@ -6,7 +6,9 @@ body {
 
 .options {
     display: flex;
+    justify-content: space-between;
     align-items: center;
+    margin: 16px;
 }
 
 input {
@@ -18,30 +20,26 @@ button {
     padding: 8px;
 }
 
-.rainbow, .grayscale, .darken {
+.rainbow, .grayscale, .darken, .erase {
     transition: all .1s ease;
+    margin: 8px;
 }
 
-.expand {
-    outline: 4px solid yellow;
+.rainbowExpand, .grayscaleExpand, .darkenExpand {
     transform: scale(1.1);
 }
 
-.rainbowSelect, .grayscaleSelect, .darkenSelect {
-    transform: scale(1.1);
-}
-
-.rainbowSelect {
+.rainbowExpand {
     background-image: linear-gradient(
         to right,
         red, orange, yellow, green, blue, indigo, violet);
 }
 
-.grayscaleSelect {
+.grayscaleExpand {
     background-color: gray;
 }
 
-.darkenSelect {
+.darkenExpand {
     background-color: black;
     color: white;
 }

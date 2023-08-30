@@ -13,18 +13,20 @@ colorInput.addEventListener('input', (e) => {
     grayscaleMode = false;
     progressivelyDarken = false;
     eraseMode = false;
-    rainbowBtn.classList.remove('rainbowSelect');
-    grayscaleBtn.classList.remove('grayscaleSelect');
-    darkenBtn.classList.remove('darkenSelect');
-    eraseBtn.classList.remove('darkenSelect');
+    rainbowBtn.classList.remove('rainbowExpand');
+    grayscaleBtn.classList.remove('grayscaleExpand');
+    darkenBtn.classList.remove('darkenExpand');
+    eraseBtn.classList.remove('darkenExpand');
 });
 
 const rainbowBtn = document.querySelector('.rainbow');
 rainbowBtn.addEventListener('mouseover', () => {
-    rainbowBtn.classList.add('expand');
+    rainbowBtn.classList.add('rainbowExpand');
 });
 rainbowBtn.addEventListener('mouseleave', () => {
-    rainbowBtn.classList.remove('expand');
+    if (!rainbowMode) {
+        rainbowBtn.classList.remove('rainbowExpand');
+    }
 });
 rainbowBtn.addEventListener('click', () => {
     rainbowMode = !rainbowMode;
@@ -32,21 +34,23 @@ rainbowBtn.addEventListener('click', () => {
         grayscaleMode = false;
         progressivelyDarken = false;
         eraseMode = false;
-        grayscaleBtn.classList.remove('grayscaleSelect');
-        darkenBtn.classList.remove('darkenSelect');
-        eraseBtn.classList.remove('darkenSelect');
-        rainbowBtn.classList.add('rainbowSelect');
+        grayscaleBtn.classList.remove('grayscaleExpand');
+        darkenBtn.classList.remove('darkenExpand');
+        eraseBtn.classList.remove('darkenExpand');
+        rainbowBtn.classList.add('rainbowExpand');
     } else {
-        rainbowBtn.classList.remove('rainbowSelect');
+        rainbowBtn.classList.remove('rainbowExpand');
     }
 });
 
 const grayscaleBtn = document.querySelector('.grayscale');
 grayscaleBtn.addEventListener('mouseover', () => {
-    grayscaleBtn.classList.add('expand');
+    grayscaleBtn.classList.add('grayscaleExpand');
 });
 grayscaleBtn.addEventListener('mouseleave', () => {
-    grayscaleBtn.classList.remove('expand');
+    if (!grayscaleMode) {
+        grayscaleBtn.classList.remove('grayscaleExpand');
+    }
 });
 grayscaleBtn.addEventListener('click', () => {
     grayscaleMode = !grayscaleMode;
@@ -54,30 +58,32 @@ grayscaleBtn.addEventListener('click', () => {
         rainbowMode = false;
         progressivelyDarken = false;
         eraseMode = false;
-        rainbowBtn.classList.remove('rainbowSelect');
-        darkenBtn.classList.remove('darkenSelect');
-        eraseBtn.classList.remove('darkenSelect');
-        grayscaleBtn.classList.add('grayscaleSelect');
+        rainbowBtn.classList.remove('rainbowExpand');
+        darkenBtn.classList.remove('darkenExpand');
+        eraseBtn.classList.remove('darkenExpand');
+        grayscaleBtn.classList.add('grayscaleExpand');
     } else {
-        grayscaleBtn.classList.remove('grayscaleSelect');
+        grayscaleBtn.classList.remove('grayscaleExpand');
     }
 });
 
 const darkenBtn = document.querySelector('.darken');
 darkenBtn.addEventListener('mouseover', () => {
-    darkenBtn.classList.add('expand');
+    darkenBtn.classList.add('darkenExpand');
 });
 darkenBtn.addEventListener('mouseleave', () => {
-    darkenBtn.classList.remove('expand');
+    if (!progressivelyDarken) {
+        darkenBtn.classList.remove('darkenExpand');
+    }
 });
 darkenBtn.addEventListener('click', () => {
     if (!eraseMode) {
         progressivelyDarken = !progressivelyDarken;
         if (progressivelyDarken) {
             setVisitValues(visitValues.length);
-            darkenBtn.classList.add('darkenSelect');
+            darkenBtn.classList.add('darkenExpand');
         } else {
-            darkenBtn.classList.remove('darkenSelect');
+            darkenBtn.classList.remove('darkenExpand');
         }
     } else {
         alert('The eraser is on, so darkening is pointless. Select another mode first.');
@@ -86,10 +92,12 @@ darkenBtn.addEventListener('click', () => {
 
 const eraseBtn = document.querySelector('.erase');
 eraseBtn.addEventListener('mouseover', () => {
-    eraseBtn.classList.add('expand');
+    eraseBtn.classList.add('darkenExpand');
 });
 eraseBtn.addEventListener('mouseleave', () => {
-    eraseBtn.classList.remove('expand');
+    if (!eraseMode) {
+        eraseBtn.classList.remove('darkenExpand');
+    }
 });
 eraseBtn.addEventListener('click', () => {
     eraseMode = !eraseMode;
@@ -97,12 +105,12 @@ eraseBtn.addEventListener('click', () => {
         rainbowMode = false;
         grayscaleMode = false;
         progressivelyDarken = false;
-        rainbowBtn.classList.remove('rainbowSelect');
-        grayscaleBtn.classList.remove('grayscaleSelect');
-        darkenBtn.classList.remove('darkenSelect');
-        eraseBtn.classList.add('darkenSelect');
+        rainbowBtn.classList.remove('rainbowExpand');
+        grayscaleBtn.classList.remove('grayscaleExpand');
+        darkenBtn.classList.remove('darkenExpand');
+        eraseBtn.classList.add('darkenExpand');
     } else {
-        eraseBtn.classList.remove('darkenSelect');
+        eraseBtn.classList.remove('darkenExpand');
     }
 });
 
@@ -133,10 +141,13 @@ function setVisitValues(dimensions) {
 }
 
 const container = document.querySelector('.container');
+const options = document.querySelector('.options');
+
 const CONTAINER_SIZE = 720;
 
 container.style.width = CONTAINER_SIZE + 'px';
 container.style.height = CONTAINER_SIZE + 'px';
+options.style.width = CONTAINER_SIZE + 'px';
 
 function createGrid(dimensions) {
     const NUM_ROWS = dimensions;
